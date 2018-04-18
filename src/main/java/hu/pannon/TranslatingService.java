@@ -6,21 +6,27 @@ import com.google.cloud.translate.Translate.LanguageListOption;
 import com.google.cloud.translate.Translate.TranslateOption;
 import com.google.common.collect.ImmutableList;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Optional;
 
-@Singleton
 public class TranslatingService {
+
+    private final Translate translate;
+    @Inject
+    public TranslatingService() {
+        translate = createTranslateService();
+    }
+
     /**
      * Detect the language of input text.
      *
      * @param sourceText source text to be detected for language
      */
     public List<Detection> detectLanguage(String sourceText) {
-        Translate translate = createTranslateService();
         List<Detection> detections = translate.detect(ImmutableList.of(sourceText));
 
         return detections;
@@ -33,7 +39,6 @@ public class TranslatingService {
      * @param out print stream
      */
     public void translateText(String sourceText, PrintStream out) {
-        Translate translate = createTranslateService();
         Translation translation = translate.translate(sourceText);
         out.printf("Source Text:\n\t%s\n", sourceText);
         out.printf("Translated Text:\n\t%s\n", translation.getTranslatedText());
@@ -52,7 +57,6 @@ public class TranslatingService {
             String sourceLang,
             String targetLang) {
 
-        Translate translate = createTranslateService();
         TranslateOption srcLang = TranslateOption.sourceLanguage(sourceLang);
         TranslateOption tgtLang = TranslateOption.targetLanguage(targetLang);
 
@@ -109,7 +113,7 @@ public class TranslatingService {
      *
      * @return Google Translate Service
      */
-    public static Translate createTranslateService() {
+    private Translate createTranslateService() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
 
         try {
@@ -125,30 +129,4 @@ public class TranslatingService {
 
         return null;
     }
-
-    /*public static void main(String[] args) {
-        String command = args[0];
-        String text;
-
-        if (command.equals("detect")) {
-            text = args[1];
-            TranslateText.detectLanguage(text, System.out);
-        } else if (command.equals("translate")) {
-            text = args[1];
-            try {
-                String sourceLang = args[2];
-                String targetLang = args[3];
-                TranslateText.translateTextWithOptions(text, sourceLang, targetLang, System.out);
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                TranslateText.translateText(text, System.out);
-            }
-        } else if (command.equals("langsupport")) {
-            try {
-                String target = args[1];
-                TranslateText.displaySupportedLanguages(System.out, Optional.of(target));
-            } catch (ArrayIndexOutOfBoundsException ex) {
-                TranslateText.displaySupportedLanguages(System.out, Optional.empty());
-            }
-        }
-    }*/
 }

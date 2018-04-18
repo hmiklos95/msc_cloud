@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Path("translating")
 @Api(value = "translating", description = "Translating")
+@Singleton
 public class TranslatingAPI {
 
     @Inject
