@@ -20,6 +20,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
     <archiveClasses>true</archiveClasses>
+
   </properties>
 
   <prerequisites>
@@ -117,7 +118,24 @@
       <artifactId>swagger-jersey2-jaxrs</artifactId>
       <version>1.5.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.cloud.sql</groupId>
+      <artifactId>mysql-socket-factory</artifactId>
+      <version>1.0.8</version>
+    </dependency>
 
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.25</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>5.2.17.Final</version>
+    </dependency>
 
   </dependencies>
 
@@ -152,6 +170,25 @@
             <exclude>com.google.guava:guava</exclude> <!-- avoid android version -->
           </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.datanucleus</groupId>
+        <artifactId>datanucleus-maven-plugin</artifactId>
+        <version>5.0.2</version>
+        <configuration>
+          <api>JPA</api>
+          <persistenceUnitName>transactions-optional</persistenceUnitName>
+          <log4jConfiguration>${basedir}/log4j.properties</log4jConfiguration>
+          <verbose>true</verbose>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>enhance</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -192,32 +229,6 @@
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>appengine-maven-plugin</artifactId>
         <version>${appengine-maven-plugin-version}</version>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>1.4.1</version>
-        <executions>
-          <execution>
-            <id>enforce-maven</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireMavenVersion>
-                  <version>3.5</version>
-                </requireMavenVersion>
-                <requirePluginVersions>
-                  <message>Best Practice is to always define plugin versions!</message>
-                  <banLatest>true</banLatest>
-                  <banRelease>true</banRelease>
-                  <phases>clean,deploy,verify,appengine:run,appengine:deploy,appengine:update,appengine:devappaserver,site</phases>
-                </requirePluginVersions>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

@@ -5,9 +5,10 @@ import com.google.cloud.translate.*;
 import com.google.cloud.translate.Translate.LanguageListOption;
 import com.google.cloud.translate.Translate.TranslateOption;
 import com.google.common.collect.ImmutableList;
+import hu.pannon.daos.TranslationLogDAO;
+import hu.pannon.models.TranslationLog;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
@@ -16,8 +17,11 @@ import java.util.Optional;
 public class TranslatingService {
 
     private final Translate translate;
+    private final TranslationLogDAO translationLogDAO;
+
     @Inject
-    public TranslatingService() {
+    public TranslatingService(TranslationLogDAO translationLogDAO) {
+        this.translationLogDAO = translationLogDAO;
         translate = createTranslateService();
     }
 
@@ -40,6 +44,7 @@ public class TranslatingService {
      */
     public void translateText(String sourceText, PrintStream out) {
         Translation translation = translate.translate(sourceText);
+
         out.printf("Source Text:\n\t%s\n", sourceText);
         out.printf("Translated Text:\n\t%s\n", translation.getTranslatedText());
     }
@@ -64,6 +69,8 @@ public class TranslatingService {
         TranslateOption model = TranslateOption.model("nmt");
 
         Translation translation = translate.translate(sourceText, srcLang, tgtLang, model);
+
+        translationLogDAO.save(new TranslationLog(sourceLang, targetLang, sourceText));
         return translation;
     }
 

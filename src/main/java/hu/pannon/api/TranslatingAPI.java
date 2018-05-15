@@ -2,19 +2,15 @@ package hu.pannon.api;
 
 import com.google.cloud.translate.Detection;
 import hu.pannon.TranslatingService;
-import hu.pannon.api.models.DetectionQuery;
-import hu.pannon.api.models.DetectionResult;
-import hu.pannon.api.models.TranslateQuery;
-import hu.pannon.api.models.TranslateResult;
+import hu.pannon.api.models.*;
+import hu.pannon.daos.TranslationLogDAO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.transaction.Transactional;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,10 +18,14 @@ import java.util.stream.Collectors;
 @Path("translating")
 @Api(value = "translating", description = "Translating")
 @Singleton
+
 public class TranslatingAPI {
 
     @Inject
     TranslatingService translatingService;
+
+    @Inject
+    TranslationLogDAO translationLogDAO;
 
     @Path("/detect/")
     @POST
@@ -48,5 +48,14 @@ public class TranslatingAPI {
     public TranslateResult translate(TranslateQuery translateQuery) {
         return new TranslateResult(translatingService.translateTextWithOptionsAndModel(translateQuery.getTextToTranslate(),
                 translateQuery.getSourceLang(), translateQuery.getTargetLang()));
+    }
+
+    @Path("/previousTranslations/")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Find previous translations", httpMethod = "GET" , response = List.class,
+            produces = "application/json")
+    public List<TranslationLogApiModel> findPreviousTranslations() {
+        return translationLogDAO.findAll().stream().map(TranslationLogApiModel::new).collect(Collectors.toList());
     }
 }

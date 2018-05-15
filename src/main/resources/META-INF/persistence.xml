@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+        http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
+
+    <persistence-unit name="transactions-optional">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://google/translationdb?cloudSqlInstance=msc-cloud-parttime-2:europe-west1:msc1&amp;socketFactory=com.google.cloud.sql.mysql.SocketFactory&amp;user=root&amp;password=root&amp;useSSL=false"/>
+
+            <property name="hibernate.hbm2ddl.auto" value="create" />
+        </properties>
+
+    </persistence-unit>
+
+</persistence>
